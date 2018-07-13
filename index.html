@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Invoice</title>
+    <style>
+        ol {
+            max-width: 400px;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .del{
+            padding: 10px;
+            color: red;
+            font-size: 2rem;
+            text-decoration: none;
+        }
+        .del:hover{
+            opacity: .8;
+        }
+        .completed {
+            text-decoration: line-through;
+        }
+        .hid {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div :class="{hid: hasKey}">
+            <h1>TODO</h1>
+            <h2>Provide a key to access your todo data</h2>
+            <form v-on:submit="setKey">
+                <input v-model="globalKey">
+                <input type="submit" value="Login">
+            </form>
+        </div>
+        <div :class="{hid: !hasKey}">
+            <h3>TODO</h3>
+            <h4>PRIVATE KEY: {{globalKey}} </h4>
+            <a href="#" v-on:click="unsetKey">Logout</a>
+            <form v-on:submit="createNewTodo">
+                <input v-model="input_todo">
+                <input type="submit" value="+">
+            </form>
+            <label>
+                    <input type="checkbox" v-model="hide_completed">
+                    Hide Completed {{hide_completed}}
+            </label>
+            <ol>
+                <todo-item v-for="(item, index) in todos" :item="item" :index="index" :key="index" :hide="hide_completed"></todo-item>
+            </ol>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- Production -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+    <script src="index.js"></script>
+
+    <script type="text/x-template" id="todo-template">
+        <li :class="{hid: item.completed && hide}">
+            <label>
+                <input type="checkbox" v-model="item.completed">
+                <span v-bind:class="{ completed: item.completed }">{{ item.text }}</span>
+            </label>
+            <a href="#" class="del" v-on:click="deleteTodo(index)"> - </a>
+        </li>
+    </script>
+</body>
+</html>
