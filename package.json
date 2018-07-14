@@ -1,0 +1,22 @@
+{
+  "name": "reslip",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zafuzi/reslip.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zafuzi/reslip/issues"
+  },
+  "homepage": "https://github.com/zafuzi/reslip#readme",
+  "dependencies": {
+    "freekey": "^1.0.7"
+  }
+}
