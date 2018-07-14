@@ -4,58 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Invoice</title>
-    <style>
-        ol {
-            max-width: 400px;
-        }
-        li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .del{
-            padding: 10px;
-            color: red;
-            font-size: 2rem;
-            text-decoration: none;
-        }
-        .del:hover{
-            opacity: .8;
-        }
-        .completed {
-            text-decoration: line-through;
-        }
-        .hid {
-            display: none;
-        }
-    </style>
+    <title>reslip</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="app">
-        <div :class="{hid: hasKey}">
-            <h1>TODO</h1>
-            <h2>Provide a key to access your todo data</h2>
-            <form v-on:submit="setKey">
-                <input v-model="globalKey">
-                <input type="submit" value="Login">
-            </form>
+    <div class="h-100" id="app">
+        <!-- Overlay Dialog to edit a project -->
+        <div id="dialog" style="display: none;">
+            <div id="dialog_content">
+                <editor v-if="current_project !== null" :project="current_project"></editor>
+            </div>
         </div>
-        <div :class="{hid: !hasKey}">
-            <h3>TODO</h3>
-            <h4>PRIVATE KEY: {{globalKey}} </h4>
-            <a href="#" v-on:click="unsetKey">Logout</a>
-            <form v-on:submit="createNewTodo">
-                <input v-model="input_todo">
-                <input type="submit" value="+">
+
+        <!-- Login Page -->
+        <div class="h-100" :class="{projects, hid: hasKey}">
+            <div class="flex flow-row space-between w-100 align-center">
+                <h1>Reslip</h1>
+            </div>
+            <div class="flex flow-col max-600 margin-auto justify-center">
+                <h2>Provide a key to access your projects data</h2>
+                <form v-on:submit="setKey" class="flex flow-col">
+                    <label class="flex-input">
+                        Key: 
+                        <input v-model="globalKey">
+                    </label>
+                    <input class="button ml-auto" type="submit" value="Login">
+                </form>
+            </div>
+        </div>
+
+        <!-- Project Overview -->
+        <div :class="{projects, hid: !hasKey}" :style="{display: !hasKey?'none':'flex'}">
+            <div class="flex flow-row space-between w-100 align-center">
+                <h2>Reslip | {{globalKey}}</h2>
+                <a class="button" href="#" v-on:click="unsetKey">Logout</a>
+            </div>
+            <form class="flex flow-row m-2 w-100" v-on:submit="createNewProject" >
+                <label class="flex-input m-1 grow-1">
+                    New Project
+                    <input v-model="task_name" placeholder="Project Name">
+                </label>
+                <input class="button ml-auto" type="submit" value="+">
             </form>
-            <label>
-                    <input type="checkbox" v-model="hide_completed">
-                    Hide Completed {{hide_completed}}
-            </label>
-            <ol>
-                <todo-item v-for="(item, index) in todos" :item="item" :index="index" :key="index" :hide="hide_completed"></todo-item>
-            </ol>
+            <h3>Today: {{today}}</h3>
+            <ul id="projects_container">
+                <project v-for="(project, index) in projects" :project="project" :index="index" :key="index"></project>
+            </ul>
         </div>
     </div>
 
@@ -64,14 +58,29 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
     <script src="index.js"></script>
 
-    <script type="text/x-template" id="todo-template">
-        <li :class="{hid: item.completed && hide}">
-            <label>
-                <input type="checkbox" v-model="item.completed">
-                <span v-bind:class="{ completed: item.completed }">{{ item.text }}</span>
-            </label>
-            <a href="#" class="del" v-on:click="deleteTodo(index)"> - </a>
+    <script type="text/x-template" id="project-template">
+        <li class="project" v-on:click="editProject">
+            <p>{{project.name}} <span v-if="project.description != ''">- {{project.description}}</span></p>
+            <small>{{project.date}}</small>
         </li>
+    </script>
+
+    <script type="text/x-template" id="editor-template">
+        <form v-on:submit="save" class="flex flow-col space-between">
+            <div class="flex flow-col">
+                <label class="flex-input"> Name: 
+                    <input v-model="project.name" placeholder="name">
+                </label>
+                <label class="flex-input"> Description: 
+                    <input v-model="project.description">
+                </label>
+            </div>
+            <div class="flex flow-row flex-controls">
+                <input class="button del mr-auto" type="button" value="Delete" v-on:click="deleteProject">
+                <input class="button" type="button" value="Cancel" onclick="toggleDialog()">
+                <input class="button" type="submit" value="Save">
+            </div>
+        </form>
     </script>
 </body>
 </html>
