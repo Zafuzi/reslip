@@ -9,9 +9,29 @@ Vue.component('project', {
             // dialog_content.innerHTML = self.project.name;
             app.current_project = self.project;
             toggleDialog();
+        },
+        in_range(date){
+            date = new Date(date);
+            console.log(date);
+            let d = ts2us(date);
+            let ok = ts2us(app.selected_date_range.min) <= d && d <= ts2us(app.selected_date_range.max);
+            console.log(ok);
+            return ok;
         }
     }
 })
+
+Vue.component('date-range', {
+    props: ['max', 'min'],
+    template: '#date_range-template',
+    methods: {
+    }
+})
+
+function ts2us(date){
+    let d = new Date(date)
+    return new Date( d.getFullYear(), d.getMonth() + 6, d.getDate() +1 );
+}
 
 Vue.component('editor', {
     props: ['project'],
@@ -74,7 +94,8 @@ document.addEventListener("DOMContentLoaded", function(){
             projects: [],
             task_name: "",
             current_project: null,
-            today: d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear()
+            today: d.getMonth()+1 + "/" + d.getDate() + "/" + d.getFullYear(),
+            selected_date_range: {min: Date.now(), max: Date.now()}
         },
         watch:{
             projects: function(){
@@ -117,7 +138,9 @@ document.addEventListener("DOMContentLoaded", function(){
                 let self = this;
                 if(!self.hasKey) return;
                 if(self.globalKey == null) return;
-                self.projects.push({name: self.task_name, description: "", date: new Date().toLocaleString()});
+                let d = new Date();
+                self.projects.push({name: self.task_name, description: "", date: Date.now() });
+                console.log(self.projects);
                 self.setProjects();
                 self.task_name = "";
             },
@@ -130,10 +153,11 @@ document.addEventListener("DOMContentLoaded", function(){
                 this.hasKey = false;
                 this.globalKey = null;
                 app.getProjects();
-            }
+            },
         }
     })
 
     app.hasKey = (app.globalKey == null || app.globalKey == "null") ? false : true;
     app.getProjects();
 })
+

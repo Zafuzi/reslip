@@ -46,7 +46,8 @@
                 </label>
                 <input class="button ml-auto" type="submit" value="+">
             </form>
-            <h3>Today: {{today}}</h3>
+            <h3>Today: </h3>
+            <date-range :max="selected_date_range.max" :min="selected_date_range.min"></date-range>
             <ul id="projects_container">
                 <project v-for="(project, index) in projects" :project="project" :index="index" :key="index"></project>
             </ul>
@@ -58,8 +59,13 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
     <script src="index.js"></script>
 
+
+    <script type="text/x-template" id="date_range-template">
+        <p>{{min}} / {{max}}</p>
+    </script>
+
     <script type="text/x-template" id="project-template">
-        <li class="project" v-on:click="editProject">
+        <li v-if="in_range(project.date)" class="project" v-on:click="editProject">
             <p>{{project.name}} <span v-if="project.description != ''">- {{project.description}}</span></p>
             <small>{{project.date}}</small>
         </li>
@@ -73,6 +79,10 @@
                 </label>
                 <label class="flex-input"> Description: 
                     <input v-model="project.description">
+                </label>
+                <label class="flex-input">
+                    Date: 
+                    <input type="text" v-model="project.date">
                 </label>
             </div>
             <div class="flex flow-row flex-controls">
